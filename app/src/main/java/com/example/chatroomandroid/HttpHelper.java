@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -29,7 +31,29 @@ public class HttpHelper {
                 throw new IOException("Unexpected response code: " + response);
             }
             String responseBody = response.body().string();
-            return gson.fromJson(responseBody, new TypeToken<List<User>>() {}.getType());
+
+            try {
+                Type userListType = new TypeToken<List<String>>() {
+                }.getType();
+
+                List<String> users = gson.fromJson(responseBody, userListType);
+
+                List<User> userList = new ArrayList<User>();
+
+                for (String user :  users)
+                {
+                    User userObj = new User();
+                    userObj.setUserName(user);
+                    userList.add(userObj);
+                }
+
+                return  userList;
+            }
+            catch (Exception ex)
+            {
+                String s = ex.getMessage();
+                return  null;
+            }
         }
     }
 
