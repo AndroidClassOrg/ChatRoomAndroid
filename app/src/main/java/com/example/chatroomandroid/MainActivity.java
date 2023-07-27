@@ -2,56 +2,92 @@ package com.example.chatroomandroid;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.io.IOException;
-import java.util.List;
+
+
+import kotlinx.coroutines.Dispatchers;
+import kotlinx.coroutines.GlobalScope;
+import kotlin.coroutines.CoroutineContext;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ListView userList;
-    private ArrayAdapter<String> adapter;
+
+
+
+    private EditText editTextUserName;
+    private EditText editTextPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        userList = findViewById(R.id.userList);
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        StrictMode.ThreadPolicy gfgPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(gfgPolicy);
 
-        userList.setAdapter(adapter);
+        editTextUserName = findViewById(R.id.editTextUserName);
+        editTextPassword = findViewById(R.id.editTextPassword);
 
-        // Call the method to retrieve and display the list of users
-        getUsers();
+        Button buttonLogin = findViewById(R.id.buttonLogin);
+        Button buttonSignup = findViewById(R.id.buttonSignup);
+
+        buttonLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                login();
+            }
+        });
+
+        buttonSignup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signup();
+            }
+        });
+
     }
 
-    private void getUsers() {
-        new AsyncTask<Void, Void, List<User>>() {
+    private void login() {
+        String userName = editTextUserName.getText().toString();
+        String password = editTextPassword.getText().toString();
 
-            @Override
-            protected List<User> doInBackground(Void... voids) {
-                try {
-                    return HttpHelper.getUsers();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }
+        try {
+            String response = HttpHelper.login(userName, password);
+            GlobalContainer.UserToken = response;
+            Intent intent = new Intent(this, ChatRoomActivity.class);
+            startActivity(intent);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Login failed. Please try again.", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-            @Override
-            protected void onPostExecute(List<User> users) {
-                if (users != null) {
-                    for (User user : users) {
-                        adapter.add(user.getUserName());
-                    }
-                }
-            }
-        }.execute();
+
+    private void signup() {
+        // Get user input for signup (e.g., name, email, password, etc.)
+        User user = new User(/* Set user details */);
+
+        try {
+            String response = HttpHelper.register(user);
+            // Handle the signup response here
+            // For example, if the response contains a success message, show a signup success message
+            // Otherwise, show an error message indicating signup failed.
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Signup failed. Please try again.", Toast.LENGTH_SHORT).show();
+        }
     }
 }
