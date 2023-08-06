@@ -1,32 +1,90 @@
+package com.example.mychat;
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" android:orientation="vertical">
+import androidx.appcompat.app.AppCompatActivity;
 
-    <ListView
-        android:id="@+id/listViewMessages"
-        android:layout_width="match_parent"
-        android:layout_weight="7"
-        android:layout_height="0dp"/>
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.StrictMode;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_weight="1"
-        android:layout_height="0dp">
+import java.io.IOException;
+import java.util.List;
 
-        <EditText
-            android:id="@+id/txtMessage"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="70dp">
-        </EditText>
 
-        <Button
-            android:id="@+id/btnSend"
-            android:layout_width="100dp"
-            android:layout_height="50dp" android:text="Send">
+public class MessageActivity extends AppCompatActivity {
 
-        </Button>
+    private EditText txtMessage;
 
-    </LinearLayout>
-</LinearLayout>
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_message);
+
+        StrictMode.ThreadPolicy gfgPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(gfgPolicy);
+
+        txtMessage = findViewById(R.id.txtMessage);
+        Button btnSend = findViewById(R.id.btnSend);
+
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage();
+            }
+        });
+
+        refresh();
+    }
+
+    private void refresh() {
+        ListView listViewMessages = findViewById(R.id.listViewMessages);
+
+        List<MessageInfo> messageInfos = null;
+        try {
+            messageInfos = HttpHelper.getMessages();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        ArrayAdapter<MessageInfo> adapter = new ArrayAdapter<MessageInfo>(this, R.layout.message_item_layout, R.id.txtViewMessages, messageInfos) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+
+                // Get the current MessageInfo object
+                MessageInfo messageInfo = (MessageInfo) getItem(position);
+
+                // Set the user name and message text to the TextView
+                if (messageInfo != null) {
+                    TextView textViewMessage = view.findViewById(R.id.txtViewMessages);
+                    textViewMessage.setText(messageInfo.getUserName() + ": " + messageInfo.getMessage());
+                }
+
+                return view;
+            }
+        };
+
+        // Set the ArrayAdapter to the ListView
+        listViewMessages.setAdapter(adapter);
+    }
+
+    private void sendMessage() {
+        String msg = txtMessage.getText().toString();
+
+        try {
+            HttpHelper.sendMessage(msg);
+            txtMessage.setText("");
+            refresh();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Send Message Failed. Please try again.", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
