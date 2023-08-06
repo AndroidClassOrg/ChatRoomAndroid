@@ -1,3 +1,5 @@
+package com.example.mychat;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -22,9 +24,6 @@ import kotlin.coroutines.CoroutineContext;
 
 public class MainActivity extends AppCompatActivity {
 
-
-
-
     private EditText editTextUserName;
     private EditText editTextPassword;
 
@@ -36,11 +35,11 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy gfgPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(gfgPolicy);
 
-        editTextUserName = findViewById(R.id.editTextUserName);
-        editTextPassword = findViewById(R.id.editTextPassword);
+        editTextUserName = findViewById(R.id.txtUserName);
+        editTextPassword = findViewById(R.id.txtPassword);
 
-        Button buttonLogin = findViewById(R.id.buttonLogin);
-        Button buttonSignup = findViewById(R.id.buttonSignup);
+        Button buttonLogin = findViewById(R.id.btnLogin);
+        Button buttonSignup = findViewById(R.id.btnRegister);
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             String response = HttpHelper.login(userName, password);
             GlobalContainer.UserToken = response;
-            Intent intent = new Intent(this, ChatRoomActivity.class);
+            Intent intent = new Intent(this, MessageActivity.class);
             startActivity(intent);
         } catch (IOException e) {
             e.printStackTrace();
