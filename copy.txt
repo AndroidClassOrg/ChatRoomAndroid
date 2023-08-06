@@ -1,90 +1,70 @@
-package com.example.mychat;
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
-import androidx.appcompat.app.AppCompatActivity;
+    <TextView
+        android:id="@+id/lblUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-import android.content.Intent;
-import android.os.Bundle;
+    <EditText
+        android:id="@+id/txtUserName"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/lblUserName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
 
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.StrictMode;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Toast;
+    <TextView
+        android:id="@+id/lblPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Password"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/txtUserName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-import java.io.IOException;
+    <EditText
+        android:id="@+id/txtPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/lblPassword"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Log In"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="50dp"/>
 
-import kotlinx.coroutines.Dispatchers;
-import kotlinx.coroutines.GlobalScope;
-import kotlin.coroutines.CoroutineContext;
-
-public class MainActivity extends AppCompatActivity {
-
-    private EditText editTextUserName;
-    private EditText editTextPassword;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        StrictMode.ThreadPolicy gfgPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(gfgPolicy);
-
-        editTextUserName = findViewById(R.id.txtUserName);
-        editTextPassword = findViewById(R.id.txtPassword);
-
-        Button buttonLogin = findViewById(R.id.btnLogin);
-        Button buttonSignup = findViewById(R.id.btnRegister);
-
-        buttonLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                login();
-            }
-        });
-
-        buttonSignup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signup();
-            }
-        });
-
-    }
-
-    private void login() {
-        String userName = editTextUserName.getText().toString();
-        String password = editTextPassword.getText().toString();
-
-        try {
-            String response = HttpHelper.login(userName, password);
-            GlobalContainer.UserToken = response;
-            Intent intent = new Intent(this, MessageActivity.class);
-            startActivity(intent);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Login failed. Please try again.", Toast.LENGTH_SHORT).show();
-        }
-    }
+    <Button
+        android:id="@+id/btnRegister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="50dp" />
 
 
-    private void signup() {
-        // Get user input for signup (e.g., name, email, password, etc.)
-        User user = new User(/* Set user details */);
 
-        try {
-            String response = HttpHelper.register(user);
-            // Handle the signup response here
-            // For example, if the response contains a success message, show a signup success message
-            // Otherwise, show an error message indicating signup failed.
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Signup failed. Please try again.", Toast.LENGTH_SHORT).show();
-        }
-    }
-}
+</androidx.constraintlayout.widget.ConstraintLayout>
